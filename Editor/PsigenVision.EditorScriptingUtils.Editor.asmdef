@@ -1,0 +1,18 @@
+{
+    "name": "PsigenVision.EditorScriptingUtils.Editor",
+    "rootNamespace": "",
+    "references": [
+        "PsigenVision.EditorScriptingUtils.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

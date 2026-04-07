@@ -1,0 +1,11 @@
+{
+  "name": "com.psigenvision.editorscriptingutils",
+  "displayName": "Editor Scripting Utils",
+  "version": "0.1.0",
+  "unity": "2021.1",
+  "description": "\"summary\": \"A powerful set of utilities for custom editor scripting, reflection, and enum manipulation in Unity. Simplify working with nested serialized fields, dynamic value access via reflection, and enum indexing using this utility package.\"",
+  "author": {
+    "name": "David Kokoski",
+    "email": "kokogamedev@gmail.com"
+  }
+}
