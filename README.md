@@ -50,11 +50,15 @@ object boxedObj = property.boxedValue;
 string path = "innerStruct.booleanValue";
 
 // Set the value via path
-boxedObj.SetValueViaPath(property.GetSystemType(), path, true);
-
-// Assign back to the property
-property.boxedValue = boxedObj;
-property.serializedObject.ApplyModifiedProperties();
+if (!boxedObj.TrSetValueViaPath(property.GetSystemType(), path, true))
+    Debug.Log("Failed to update boxed object with new value);
+else
+{
+    // Assign back to the property if the value was successfully set
+    property.boxedValue = boxedObj;
+    property.serializedObject.ApplyModifiedProperties();
+}
+    
 ```
 
 ### 2. Field Mapping for Collections
@@ -78,6 +82,16 @@ Retrieve enums dynamically using order-based indices instead of raw integer valu
 int index = 2;
 if (index.TryGetEnumByIndex(out MyEnum result)) {
     Debug.Log($"Enum found: {result}");
+}
+```
+
+You can also retrieve an enum dynamically from an object, providing the field name for its enum instance member.
+
+```csharp
+if (containingObject.TryGetEnumByIndex("valueType", 3, out object result)) {
+    Debug.Log($"Retrieved enum: {result}");
+} else {
+    Debug.Log("Could not obtain enum version of the third index for the valueType enum field in the containing object");
 }
 ```
 

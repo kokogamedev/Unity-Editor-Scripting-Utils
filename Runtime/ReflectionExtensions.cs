@@ -93,7 +93,7 @@ namespace PsigenVision.Utilities
         /// <returns>True if the value was successfully set; otherwise, false if the path is invalid, the field cannot be resolved, or the value assignment fails.</returns>
         /// <remarks>Although index-accessed collections are supported in the path, the associated collection must be an array or implement IList,
         /// and the format for access must be "collection[i]"</remarks>
-        public static bool SetValueViaPath(this object target, System.Type type, string path, object value)
+        public static bool TrySetValueViaPath(this object target, System.Type type, string path, object value)
         {
             if (target == null || string.IsNullOrEmpty(path)) return false;
 
@@ -117,11 +117,11 @@ namespace PsigenVision.Utilities
 
                 //Handle any potential collections
                 if (((i == fieldNames.Length - 1) ? target : objectStack[currentObjectIndex + 1]) //If we have reached the root of the fields, assign the last object to the target; otherwise chain-assign the object to the next parent field  
-                    is ReflectionExtensions.IListMemberPointer memberPointer)
+                    is IListMemberPointer memberPointer)
                 {
                     //Set the upcoming member in the object stack to be an element of the current collection 
                     //Handle nested collections
-                    if (objectStack[currentObjectIndex] is ReflectionExtensions.IListMemberPointer memberPointer2)
+                    if (objectStack[currentObjectIndex] is IListMemberPointer memberPointer2)
                     {
                         memberPointer.SetValue(memberPointer2.Container);
                         currentObjectIndex++; //The element at the current object index has been handled via setting it to the member collection
@@ -136,29 +136,25 @@ namespace PsigenVision.Utilities
                         currentObjectIndex++; //The element at the current object index has been handled via setting it to the member collection
                     
                         //Set the current parent's field to be the collection, not the element
-                        //Get field info for child field off of the parent object instance
-                        containingType //The next object/type up is the parent type of the current field
-                            .GetField(childFieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)//Get the child field of the upcoming type
-                            .SetValue((i == fieldNames.Length - 1) ? target : objectStack[currentObjectIndex+1], //If we have reached the root of the fields, assign the last object to the target; otherwise chain-assign the object to the next parent field 
-                                memberPointer.Container);//Set child field name to correct value (collection container)
+                        //Set child field name to correct value (collection container)
+                        SetNextObjectInStack(i, containingType, ref childFieldName, memberPointer.Container);
                     }
                 }
                 else//Handle normal members
                 {
-                    //Get field info for child field off of the parent object instance
-                    // typeStack[currentObjectIndex+1] //The next object/type up is the parent type of the current field
-                    //     .GetField(childFieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)//Get the child field of the upcoming type
-                    //     .SetValue(objectStack[currentObjectIndex+1], objectStack[currentObjectIndex]);//Set child field name to correct value (object instance)
-                    
-                    //The next object/type up is the parent type of the current field
-                    var currentField = containingType.GetField(childFieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);//Get the child field of the upcoming type
-                    currentField.SetValue((i == fieldNames.Length - 1) ? target : objectStack[currentObjectIndex+1], //If we have reached the root of the fields, assign the last object to the target; otherwise chain-assign the object to the next parent field
-                        (i == 0) ? value : objectStack[currentObjectIndex]); //Set child field name to correct value (the value passed in to be assigned if the first child, which is the last in the dot-separated list, and the current object instance otherwise)
+                    //Set child field to correct value (the value passed in to be assigned if the first child, which is the last in the dot-separated list, and the current object instance otherwise)
+                    SetNextObjectInStack(i, containingType, ref childFieldName, (i == 0) ? value : objectStack[currentObjectIndex]);
                 }
 
                 currentObjectIndex++;
             }
             return true;
+            
+            void SetNextObjectInStack(int iterationIndex, Type containingType, ref string childFieldName, object valueToAssign) => 
+                containingType. //The next object/type up is the parent type of the current field
+                GetField(childFieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)//Get the child field of the upcoming type (off the parent object instance)
+                .SetValue((iterationIndex == fieldNames.Length - 1) ? target : objectStack[currentObjectIndex+1], //If we have reached the root of the fields, assign the last object to the target; otherwise chain-assign the object to the next parent field
+                    valueToAssign); 
         }
 
         /// <summary>

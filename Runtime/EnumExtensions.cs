@@ -50,13 +50,13 @@ namespace PsigenVision.Utilities
         /// true if the operation is successful and an enum value is retrieved; otherwise, false.
         /// </returns>
         public static bool TryGetEnumByIndex(this object container, string fieldName, int index,
-            [CanBeNull] out object result)
+            [CanBeNull] out object result, BindingFlags bindingAttr = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
         {
             result = null;
             if (container == null) return false;
 
             // 1. Find the field named after the field name provided
-            FieldInfo? fieldInfo = container.GetType().GetField(fieldName);
+            FieldInfo? fieldInfo = container.GetType().GetField(fieldName, bindingAttr);
             if (fieldInfo == null || !fieldInfo.FieldType.IsEnum) return false;
 
             // 2. Get all values in the order defined

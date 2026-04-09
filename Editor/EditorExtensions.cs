@@ -5,122 +5,125 @@ namespace PsigenVision.Utilities.Editor
 {
     public static class EditorExtensions
     {
-        public static void SetBoxedValue(this SerializedProperty property, System.Type type, string path, SerializedProperty valueProp, out object boxedValue) =>
-            boxedValue = property.GetBoxedValueViaPath(type, path, valueProp);
-
         /// <summary>
-        /// Returns a copy of the boxed object within the passed in SerializedProperty with the value contained within valueProp assigned
-        /// to the field whose location is provided via the provided dot-separated field path. 
+        /// Attempts to assign a boxed value to a specified field within a SerializedProperty hierarchy based on the provided field path.
         /// </summary>
-        /// <param name="property">The SerializedProperty from which the boxed value will be extracted.</param>
-        /// <param name="type">The type containing the property hierarchy.</param>
-        /// <param name="path">Dot-separated string indicating the field hierarchy to traverse (e.g., "Outer.Inner.Field").</param>
-        /// <param name="valueProp">The SerializedProperty to use for resolving the final value.</param>
-        /// <returns>The boxed value of the specified property, or null if the value cannot be found.</returns>
-        public static object GetBoxedValueViaPath(this SerializedProperty property, System.Type type, string path,
-            SerializedProperty valueProp)
+        /// <param name="property">The SerializedProperty representing the root object for the field path.</param>
+        /// <param name="type">The type that declares the field hierarchy corresponding to the specified path.</param>
+        /// <param name="path">The dot-separated string indicating the field hierarchy within the serialized object (e.g., "Outer.Inner.Field").</param>
+        /// <param name="valueProp">The SerializedProperty containing the value to be used for updating the specified field.</param>
+        /// <param name="modifiedObject">The resulting updated object after attempting to set the boxed value along the specified field path.</param>
+        /// <returns>True if the boxed value was successfully set; otherwise, false.</returns>
+        public static bool TrySetBoxedValueViaPath(this SerializedProperty property, System.Type type, string path,
+            SerializedProperty valueProp, out object modifiedObject)
         {
-            var boxedObj = property.boxedValue;
+            modifiedObject = property.boxedValue;
+            bool success;
             switch (valueProp.propertyType)
             {
                 case SerializedPropertyType.Boolean:
-                    boxedObj.SetValueViaPath(type, path, valueProp.boolValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.boolValue);
                     //Debug.Log($"Value property changed to {valueProp.boolValue}");
                     break;
                 case SerializedPropertyType.Integer:
-                    boxedObj.SetValueViaPath(type, path, valueProp.intValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.intValue);
                     //Debug.Log($"Value property changed to {valueProp.intValue}");
                     break;
                 case SerializedPropertyType.Float:
-                    boxedObj.SetValueViaPath(type, path, valueProp.floatValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.floatValue);
                     //Debug.Log($"Value property changed to {valueProp.floatValue}");
                     break;
                 case SerializedPropertyType.String:
-                    boxedObj.SetValueViaPath(type, path, valueProp.stringValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.stringValue);
                     //Debug.Log($"Value property changed to {valueProp.stringValue}");
                     break;
                 case SerializedPropertyType.Color:
-                    boxedObj.SetValueViaPath(type, path, valueProp.colorValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.colorValue);
                     //Debug.Log($"Value property changed to {valueProp.colorValue}");
                     break;
                 case SerializedPropertyType.Vector2:
-                    boxedObj.SetValueViaPath(type, path, valueProp.vector2Value);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.vector2Value);
                     //Debug.Log($"Value property changed to {valueProp.vector2Value}");
                     break;
                 case SerializedPropertyType.Vector3:
-                    boxedObj.SetValueViaPath(type, path, valueProp.vector3Value);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.vector3Value);
                     //Debug.Log($"Value property changed to {valueProp.vector3Value}");
                     break;
                 case SerializedPropertyType.Quaternion:
-                    boxedObj.SetValueViaPath(type, path, valueProp.quaternionValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.quaternionValue);
                     //Debug.Log($"Value property changed to {valueProp.quaternionValue}");
                     break;
                 case SerializedPropertyType.Generic:
-                    boxedObj.SetValueViaPath(type, path, valueProp.objectReferenceValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.objectReferenceValue);
                     break;
                 case SerializedPropertyType.ObjectReference:
-                    boxedObj.SetValueViaPath(type, path, valueProp.objectReferenceValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.objectReferenceValue);
                     break;
                 case SerializedPropertyType.LayerMask:
-                    boxedObj.SetValueViaPath(type, path, valueProp.intValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.intValue);
                     break;
                 case SerializedPropertyType.Enum:
-                    boxedObj.SetValueViaPath(type, path, valueProp.enumValueFlag);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.enumValueFlag);
                     break;
                 case SerializedPropertyType.Vector4:
-                    boxedObj.SetValueViaPath(type, path, valueProp.vector4Value);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.vector4Value);
                     break;
                 case SerializedPropertyType.Rect:
-                    boxedObj.SetValueViaPath(type, path, valueProp.rectValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.rectValue);
                     break;
                 case SerializedPropertyType.ArraySize:
-                    boxedObj.SetValueViaPath(type, path, valueProp.arraySize);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.arraySize);
                     break;
                 case SerializedPropertyType.Character:
-                    boxedObj.SetValueViaPath(type, path, valueProp.stringValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.stringValue);
                     break;
                 case SerializedPropertyType.AnimationCurve:
-                    boxedObj.SetValueViaPath(type, path, valueProp.animationCurveValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.animationCurveValue);
                     break;
                 case SerializedPropertyType.Bounds:
-                    boxedObj.SetValueViaPath(type, path, valueProp.boundsValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.boundsValue);
                     break;
                 case SerializedPropertyType.Gradient:
-                    boxedObj.SetValueViaPath(type, path, valueProp.gradientValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.gradientValue);
                     break;
                 case SerializedPropertyType.ExposedReference:
-                    boxedObj.SetValueViaPath(type, path, valueProp.objectReferenceValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.objectReferenceValue);
                     break;
                 case SerializedPropertyType.FixedBufferSize:
-                    boxedObj.SetValueViaPath(type, path, valueProp.fixedBufferSize);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.fixedBufferSize);
                     break;
                 case SerializedPropertyType.Vector2Int:
-                    boxedObj.SetValueViaPath(type, path, valueProp.vector2IntValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.vector2IntValue);
                     break;
                 case SerializedPropertyType.Vector3Int:
-                    boxedObj.SetValueViaPath(type, path, valueProp.vector3IntValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.vector3IntValue);
                     break;
                 case SerializedPropertyType.RectInt:
-                    boxedObj.SetValueViaPath(type, path, valueProp.rectIntValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.rectIntValue);
                     break;
                 case SerializedPropertyType.BoundsInt:
-                    boxedObj.SetValueViaPath(type, path, valueProp.boundsIntValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.boundsIntValue);
                     break;
                 case SerializedPropertyType.ManagedReference:
-                    boxedObj.SetValueViaPath(type, path, valueProp.managedReferenceValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.managedReferenceValue);
                     break;
                 case SerializedPropertyType.Hash128:
-                    boxedObj.SetValueViaPath(type, path, valueProp.hash128Value);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.hash128Value);
                     break;
                 case SerializedPropertyType.RenderingLayerMask:
-                    boxedObj.SetValueViaPath(type, path, valueProp.intValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.intValue);
                     break;
                 case SerializedPropertyType.EntityId:
-                    boxedObj.SetValueViaPath(type, path, valueProp.entityIdValue);
+                    success = modifiedObject.TrySetValueViaPath(type, path, valueProp.entityIdValue);
                     break;
-                default: break;
+                default:
+                    success = false;
+                    break;
             }
-            return property.boxedValue = boxedObj;
+
+            if (!success) Debug.LogError($"Failed to set boxed value via path: {path} as {property.propertyType}");
+            else property.boxedValue = modifiedObject;
+            return success;
         }
 
         /// <summary>

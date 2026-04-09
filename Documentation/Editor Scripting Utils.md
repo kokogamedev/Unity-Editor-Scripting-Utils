@@ -19,12 +19,15 @@ The `EditorExtensions` class provides an array of extension methods for `Seriali
 
 ### Key Methods
 
-#### **SetBoxedValue**
+#### **SetBoxedValue/TrySetBoxedValueViaPath**
 *Sets a new value for a serialized property, handling boxing and path-based assignment for potentially nested fields.*
+
+- For the "Try" method variants, information regarding success or failure is returned.
 
 ```csharp
 void SetBoxedValue(this SerializedProperty property, SerializedProperty valueProp, out object boxedValue);
-void SetBoxedValue(this SerializedProperty property, System.Type type, string path, SerializedProperty valueProp, out object boxedValue);
+bool TrySetBoxedValueViaPath(this SerializedProperty property, System.Type type, string path,
+            SerializedProperty valueProp, out object modifiedObject)
 ```
 
 **Example Usage:**
@@ -55,10 +58,11 @@ if (EditorGUI.EndChangeCheck())
 	{
 		// --------Sync Object with Serialized State--------
 		// Re-assign the entire struct back to the property with the modified value extracted from the value property
-		currentBoxedValue = property.GetBoxedValueViaPath(outerType, fieldPath, valueProp);
+		if (property.TrySetBoxedValueViaPath(outerType, fieldPath, valueProp, out currentBoxedValue))
+        	Debug.Log("Failed to modify and set boxed value with the modified integer field."); 
 	}
 	
-	property.boxedValue = currentBoxedValue;
+	property.boxedValue = currentBoxedValue; //redundant as the setting of the boxed value is handled in that method
 	property.serializedObject.ApplyModifiedProperties();
 }
 ```
@@ -240,14 +244,24 @@ Although index-accessed collections are supported in the path, the associated co
 
 ```csharp
 bool TryGetEnumByIndex<T>(this int index, out T enumValue) where T : Enum;
+bool TryGetEnumByIndex(this object container, string fieldName, int index,
+            [CanBeNull] out object result, BindingFlags bindingAttr = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
 ```
 
 **Example Usage:**
 ```csharp
-if (3.TryGetEnumByIndex(out MyEnum result)) {
+if (3.TryGetEnumByIndex<MyEnum>(out MyEnum result)) {
     Debug.Log($"Retrieved enum: {result}");
 } else {
     Debug.Log("Index out of bounds.");
+}
+```
+
+```csharp
+if (containingObject.TryGetEnumByIndex("valueType", 3, out object result)) {
+    Debug.Log($"Retrieved enum: {result}");
+} else {
+    Debug.Log("Could not obtain enum version of the third index for the valueType enum field in the containing object");
 }
 ```
 
@@ -259,7 +273,7 @@ bool TryGetEnumByIndex(this object container, string fieldName, int index, [CanB
 ```
 
 **Example Use Case**:
-In custom property drawers designed to target multiple structures without any inheritance- or interface-based connections, this allows inspection of enums within those structures requiring only that their instances share the same name, and that the structure's individual enum-type "members" be related by order. The type of the enums need not be the same, and the structures may be structs, which cannot support inheritance or interface-implementation. 
+In custom property drawers designed to target multiple structures without any inheritance- or interface-based connections, this allows inspection of enums within those structures requiring only that their instances share the same name, and that the structure's individual enum-type "members" be related by order. The type of the enums need not be the same, and the structures may be structs which cannot support inheritance. 
 
 **Example Code**:
 ```csharp

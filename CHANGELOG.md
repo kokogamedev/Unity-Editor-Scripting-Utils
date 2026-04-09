@@ -30,3 +30,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - The package includes documentation for all key features.
 
 ---
+
+## [0.1.1] - 2026-04-09
+
+### Included failure handling in setting of boxed methods, and refactored reflection extension methods
+
+### Changed
+- `GetBoxedValueViaPath` renamed to `TrySetBoxedValueViaPath`, made to return the success-boolean value returned by editor extension method `SetValueViaPath`, internally sets the property's boxed value to the modified boxed value in the event of success, and outputs the modified property in a new out parameter.
+- Removed redundant `SetBoxedValue` accepting a path parameter as it now performs the same function as `TrySetBoxedValueViaPath`
+- Changed `Try`
+
+### Refactored
+- `TryGetEnumByIndex` extension method off of `object` now accepts as an optional parameter a `BindingFlag`, and is, by default, set to find all non-public and public instance fields.
+- `SetValueViaPath` now renamed to `TrySetValueViaPath`, and was internally refactored without modification of logic (code cleanup).
+
+---
